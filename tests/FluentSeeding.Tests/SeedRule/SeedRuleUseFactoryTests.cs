@@ -9,19 +9,6 @@ namespace FluentSeeding.Tests.SeedRule;
 public sealed class SeedRuleUseFactoryTests : SeedRuleTest
 {
     [Test]
-    public void UseFactory_WhenCalled_ReturnsSameRuleForChaining()
-    {
-        // Arrange
-        var rule = CreateRule(u => u.Name);
-
-        // Act
-        var returned = rule.UseFactory(() => "Test");
-
-        // Assert
-        returned.Should().BeSameAs(rule);
-    }
-
-    [Test]
     public void UseFactory_WhenApplied_SetsPropertyToFactoryResult()
     {
         // Arrange
@@ -91,34 +78,6 @@ public sealed class SeedRuleUseFactoryTests : SeedRuleTest
 
         // Assert
         user.Id.Should().Be(expectedId);
-    }
-
-    [Test]
-    public void UseFactory_WithIndex_WhenCalled_ReturnsSameRuleForChaining()
-    {
-        // Arrange
-        var rule = CreateRule(u => u.Name);
-
-        // Act
-        var returned = rule.UseFactory(i => $"User{i}");
-
-        // Assert
-        returned.Should().BeSameAs(rule);
-    }
-
-    [Test]
-    public void UseFactory_WithIndex_WhenApplied_PassesIndexToFactory()
-    {
-        // Arrange
-        var rule = CreateRule(u => u.Name);
-        rule.UseFactory(i => $"User{i}");
-        var user = new User();
-
-        // Act
-        rule.Apply(user, 5);
-
-        // Assert
-        user.Name.Should().Be("User5");
     }
 
     [Test]

@@ -7,6 +7,6 @@ public abstract class SeedRuleTest
 {
     protected static SeedRule<User, TProperty> CreateRule<TProperty>(Expression<Func<User, TProperty>> selector)
     {
-        return new SeedRule<User, TProperty>(selector);
+        return new SeedRule<User, TProperty>(selector, null!);
     }
 }

@@ -8,18 +8,6 @@ namespace FluentSeeding.Tests.SeedRule;
 [Category(nameof(SeedRule<,>))]
 public sealed class SeedRuleUseValueTests : SeedRuleTest
 {
-    [Test]
-    public void UseValue_WhenCalled_ReturnsSameRuleForChaining()
-    {
-        // Arrange
-        var rule = CreateRule(u => u.Name);
-
-        // Act
-        var returned = rule.UseValue("Test");
-
-        // Assert
-        returned.Should().BeSameAs(rule);
-    }
 
     [Test]
     public void UseValue_WhenCalledMultipleTimes_UsesLastValue()

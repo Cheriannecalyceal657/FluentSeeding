@@ -28,7 +28,7 @@ public sealed class SeedBuilder<T> where T : class
 
     public SeedRule<T, TProperty> RuleFor<TProperty>(Expression<Func<T, TProperty>> selector)
     {
-        var rule = new SeedRule<T, TProperty>(selector);
+        var rule = new SeedRule<T, TProperty>(selector, this);
         _rules.Add(rule);
         return rule;
     }

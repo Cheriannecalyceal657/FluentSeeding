@@ -9,19 +9,6 @@ namespace FluentSeeding.Tests.SeedRule;
 public sealed class SeedRuleUseFromTests : SeedRuleTest
 {
     [Test]
-    public void UseFrom_WhenCalled_ReturnsSameRuleForChaining()
-    {
-        // Arrange
-        var rule = CreateRule(u => u.Name);
-
-        // Act
-        var returned = rule.UseFrom("A", "B");
-
-        // Assert
-        returned.Should().BeSameAs(rule);
-    }
-
-    [Test]
     public void UseFrom_WithSingleValue_AlwaysSetsExactValue()
     {
         // Arrange

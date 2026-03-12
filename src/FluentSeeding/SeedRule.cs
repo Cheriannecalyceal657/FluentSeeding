@@ -7,6 +7,7 @@ where T : class
 {
     private readonly Expression<Func<T, TProperty>> _selector;
     private readonly Action<T, TProperty> _setter;
+    private readonly SeedBuilder<T> _parent;
 
     private Func<TProperty>? _valueFactory
     {
@@ -30,37 +31,38 @@ where T : class
         }
     }
 
-    internal SeedRule(Expression<Func<T, TProperty>> selector)
+    internal SeedRule(Expression<Func<T, TProperty>> selector, SeedBuilder<T> parent)
     {
         _selector = selector;
+        _parent = parent;
         _setter = selector.BuildSetter();
     }
 
-    public SeedRule<T, TProperty> UseValue(TProperty value)
+    public SeedBuilder<T> UseValue(TProperty value)
     {
         _valueFactory = () => value;
-        return this;
+        return _parent;
     }
 
-    public SeedRule<T, TProperty> UseFactory(Func<TProperty> value)
+    public SeedBuilder<T> UseFactory(Func<TProperty> value)
     {
         _valueFactory = value;
-        return this;
+        return _parent;
     }
     
-    public SeedRule<T, TProperty> UseFactory(Func<int, TProperty> value)
+    public SeedBuilder<T> UseFactory(Func<int, TProperty> value)
     {
         _indexedValueFactory = value;
-        return this;
+        return _parent;
     }
 
-    public SeedRule<T, TProperty> UseFrom(params TProperty[] values)
+    public SeedBuilder<T> UseFrom(params TProperty[] values)
     {
         var random = new Random();
         _valueFactory = () => values[random.Next(values.Length)];
-        return this;
+        return _parent;
     }
-
+    
     public void Apply(T instance, int index = 0)
     {
         if (_valueFactory is null && _indexedValueFactory is null)
