@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/FluentSeeding.DependencyInjection/FluentSeeding.DependencyInjection.csproj" />
+    <Project Path="src/FluentSeeding.EntityFrameworkCore/FluentSeeding.EntityFrameworkCore.csproj" />
+    <Project Path="src/FluentSeeding/FluentSeeding.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/FluentSeeding.DependencyInjection.Tests/FluentSeeding.DependencyInjection.Tests.csproj" />
+    <Project Path="tests/FluentSeeding.EntityFrameworkCore.Tests/FluentSeeding.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/FluentSeeding.Tests.Common/FluentSeeding.Tests.Common.csproj" />
+    <Project Path="tests/FluentSeeding.Tests/FluentSeeding.Tests.csproj" />
+  </Folder>
+</Solution>
