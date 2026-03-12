@@ -66,6 +66,76 @@ public sealed class SeedBuilder<T> where T : class
     }
 
     /// <summary>
+    /// Configures a single nested object property by building it with a dedicated <see cref="SeedBuilder{TProperty}"/>.
+    /// Always produces exactly one nested instance per parent entity, regardless of any <c>Count</c> call
+    /// inside <paramref name="configure"/>.
+    /// </summary>
+    /// <typeparam name="TProperty">The type of the nested object. Must be a reference type.</typeparam>
+    /// <param name="selector">A member expression identifying the direct property to populate (e.g. <c>x => x.Address</c>).</param>
+    /// <param name="configure">A delegate that configures the nested <see cref="SeedBuilder{TProperty}"/>.</param>
+    /// <exception cref="ArgumentException">
+    /// Thrown when <paramref name="selector"/> refers to a nested property.
+    /// Only direct properties of <typeparamref name="T"/> are supported.
+    /// </exception>
+    public SeedBuilder<T> HasOne<TProperty>(
+        Expression<Func<T, TProperty>> selector,
+        Action<SeedBuilder<TProperty>> configure)
+        where TProperty : class
+    {
+        var nested = new SeedBuilder<TProperty>();
+        configure(nested);
+        nested.Count(1);
+        RuleFor(selector).UseFactory(() => nested.Build().Single());
+        return this;
+    }
+
+    /// <summary>
+    /// Configures a collection property typed as <see cref="IEnumerable{TItem}"/> by building its items
+    /// with a dedicated <see cref="SeedBuilder{TItem}"/>. The number of items produced is controlled by
+    /// <c>Count</c> inside <paramref name="configure"/> (defaults to 1).
+    /// </summary>
+    /// <typeparam name="TItem">The element type of the collection. Must be a reference type.</typeparam>
+    /// <param name="selector">A member expression identifying the direct collection property to populate.</param>
+    /// <param name="configure">A delegate that configures the nested <see cref="SeedBuilder{TItem}"/>.</param>
+    /// <exception cref="ArgumentException">
+    /// Thrown when <paramref name="selector"/> refers to a nested property.
+    /// Only direct properties of <typeparamref name="T"/> are supported.
+    /// </exception>
+    public SeedBuilder<T> HasMany<TItem>(
+        Expression<Func<T, IEnumerable<TItem>>> selector,
+        Action<SeedBuilder<TItem>> configure)
+        where TItem : class
+    {
+        var nested = new SeedBuilder<TItem>();
+        configure(nested);
+        RuleFor(selector).UseFactory(() => nested.Build());
+        return this;
+    }
+
+    /// <summary>
+    /// Configures a collection property typed as <see cref="List{TItem}"/> by building its items
+    /// with a dedicated <see cref="SeedBuilder{TItem}"/>. The number of items produced is controlled by
+    /// <c>Count</c> inside <paramref name="configure"/> (defaults to 1).
+    /// </summary>
+    /// <typeparam name="TItem">The element type of the collection. Must be a reference type.</typeparam>
+    /// <param name="selector">A member expression identifying the direct collection property to populate.</param>
+    /// <param name="configure">A delegate that configures the nested <see cref="SeedBuilder{TItem}"/>.</param>
+    /// <exception cref="ArgumentException">
+    /// Thrown when <paramref name="selector"/> refers to a nested property.
+    /// Only direct properties of <typeparamref name="T"/> are supported.
+    /// </exception>
+    public SeedBuilder<T> HasMany<TItem>(
+        Expression<Func<T, List<TItem>>> selector,
+        Action<SeedBuilder<TItem>> configure)
+        where TItem : class
+    {
+        var nested = new SeedBuilder<TItem>();
+        configure(nested);
+        RuleFor(selector).UseFactory(() => nested.Build().ToList());
+        return this;
+    }
+
+    /// <summary>
     /// Overrides the default <see cref="Activator.CreateInstance{T}"/> with a custom factory delegate.
     /// Useful when <typeparamref name="T"/> has no parameterless constructor or requires specific initialisation.
     /// </summary>
