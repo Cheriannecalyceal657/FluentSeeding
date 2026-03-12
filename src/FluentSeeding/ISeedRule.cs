@@ -1,6 +1,6 @@
 namespace FluentSeeding;
 
-public interface ISeedRule<T>
+public interface ISeedRule<in T>
 {
-    void Apply(T instance);
+    void Apply(T instance, int index = 0);
 }

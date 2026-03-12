@@ -50,7 +50,7 @@ public sealed class SeedBuilder<T> where T : class
             var entity = _factory != null ? _factory() : Activator.CreateInstance<T>()!;
             foreach (var rule in _rules)
             {
-                rule.Apply(entity);
+                rule.Apply(entity, i);
             }
             entities.Add(entity);
         }
