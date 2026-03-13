@@ -86,8 +86,7 @@ where T : class
     {
         if (values == null || values.Length == 0)
             throw new ArgumentException("Values collection cannot be null or empty.", nameof(values));
-        var random = new Random();
-        _valueFactory = () => values[random.Next(values.Length)];
+        _valueFactory = () => values[Random.Shared.Next(values.Length)];
         return _parent;
     }
 
@@ -98,10 +97,10 @@ where T : class
     /// <exception cref="ArgumentException">Thrown when <paramref name="values"/> is null or empty.</exception>
     public SeedBuilder<T> UseFrom(IEnumerable<TProperty> values)
     {
-        if (values == null || !values.Any())
+        var vals = values as TProperty[] ?? values.ToArray();
+        if (values == null || !vals.Any())
             throw new ArgumentException("Values collection cannot be null or empty.", nameof(values));
-        var random = new Random();
-        _valueFactory = () => values.ElementAt(random.Next(values.Count()));
+        _valueFactory = () => vals.ElementAt(Random.Shared.Next(vals.Count()));
         return _parent;
     }
 
@@ -113,7 +112,7 @@ where T : class
     public void Apply(T instance, int index = 0)
     {
         if (_valueFactory is null && _indexedValueFactory is null)
-            throw new InvalidOperationException($"No value or factory configured for '{_selector}.");
+            throw new InvalidOperationException($"No value or factory configured for '{_selector}'.");
 
         if (_valueFactory != null)
         {

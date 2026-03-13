@@ -160,8 +160,7 @@ public sealed class SeedBuilder<T> where T : class
     /// </exception>
     public IEnumerable<T> Build()
     {
-        var random = new Random();
-        var count = random.Next(_countMin, _countMax + 1);
+        var count = Random.Shared.Next(_countMin, _countMax + 1);
         var entities = new List<T>();
 
         for (int i = 0; i < count; i++)

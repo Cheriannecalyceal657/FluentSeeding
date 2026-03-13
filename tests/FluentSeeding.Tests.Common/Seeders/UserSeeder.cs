@@ -8,6 +8,6 @@ public sealed class UserSeeder : EntitySeeder<User>
         
         builder.RuleFor(u => u.Id).UseFactory(Guid.NewGuid);
         builder.RuleFor(u => u.Name).UseValue("Test User");
-        builder.RuleFor(u => u.Email).UseValue("test@email.com");
+        builder.RuleFor(u => u.Email).UseFactory(i => DataUtils.GenerateEmail("Test User " + i));
     }
 }
