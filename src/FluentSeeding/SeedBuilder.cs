@@ -160,13 +160,14 @@ public sealed class SeedBuilder<T> where T : class
     /// </exception>
     public IEnumerable<T> Build()
     {
+        var sortedRules = TopologicalSort(_rules);
         var count = Random.Shared.Next(_countMin, _countMax + 1);
         var entities = new List<T>();
 
         for (int i = 0; i < count; i++)
         {
             var entity = _factory != null ? _factory() : Activator.CreateInstance<T>()!;
-            foreach (var rule in _rules)
+            foreach (var rule in sortedRules)
             {
                 rule.Apply(entity, i);
             }
@@ -174,5 +175,66 @@ public sealed class SeedBuilder<T> where T : class
         }
 
         return entities;
+    }
+
+    /// <summary>
+    /// Sorts <paramref name="rules"/> so that every rule runs after all rules it depends on,
+    /// using Kahn's algorithm (BFS-based topological sort).
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown when a circular dependency is detected.</exception>
+    private static List<ISeedRule<T>> TopologicalSort(List<ISeedRule<T>> rules)
+    {
+        int n = rules.Count;
+
+        // Map property name -> indices of rules that target that property
+        var nameToIndices = new Dictionary<string, List<int>>(n);
+        for (int i = 0; i < n; i++)
+        {
+            var name = rules[i].PropertyName;
+            if (!nameToIndices.TryGetValue(name, out var list))
+                nameToIndices[name] = list = new List<int>();
+            list.Add(i);
+        }
+
+        // Build adjacency: depIdx -> list of rule indices that directly depend on it
+        var inDegree = new int[n];
+        var dependents = new List<int>[n];
+        for (int i = 0; i < n; i++) dependents[i] = new List<int>();
+
+        for (int i = 0; i < n; i++)
+        {
+            foreach (var depName in rules[i].Dependencies)
+            {
+                if (!nameToIndices.TryGetValue(depName, out var depIndices))
+                    continue; // dependency not covered by any rule = no ordering constraint
+
+                foreach (var depIdx in depIndices)
+                {
+                    dependents[depIdx].Add(i);
+                    inDegree[i]++;
+                }
+            }
+        }
+
+        // Kahn's BFS: seed queue with zero-in-degree rules in registration order
+        var queue = new Queue<int>();
+        for (int i = 0; i < n; i++)
+            if (inDegree[i] == 0) queue.Enqueue(i);
+
+        var result = new List<ISeedRule<T>>(n);
+        while (queue.Count > 0)
+        {
+            var idx = queue.Dequeue();
+            result.Add(rules[idx]);
+            foreach (var dep in dependents[idx])
+                if (--inDegree[dep] == 0)
+                    queue.Enqueue(dep);
+        }
+
+        if (result.Count != n)
+            throw new InvalidOperationException(
+                "A circular dependency was detected among seed rules. Check your DependsOn declarations.");
+
+        return result;
     }
 }

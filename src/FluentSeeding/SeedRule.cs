@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace FluentSeeding;
 
@@ -16,9 +17,17 @@ where T : class
     private readonly Expression<Func<T, TProperty>> _selector;
     private readonly Action<T, TProperty> _setter;
     private readonly SeedBuilder<T> _parent;
-    
+    private readonly HashSet<string> _dependencies = new();
+    private Func<T, bool>? _condition;
+
     private HashSet<TProperty>? _seenValues;
     private bool _unique = false;
+
+    /// <inheritdoc />
+    public string PropertyName { get; }
+
+    /// <inheritdoc />
+    public IReadOnlyCollection<string> Dependencies => _dependencies;
 
     private Func<TProperty>? _valueFactory
     {
@@ -47,6 +56,7 @@ where T : class
         _selector = selector;
         _parent = parent;
         _setter = selector.BuildSetter();
+        PropertyName = ((MemberExpression)selector.Body).Member.Name;
     }
 
     #region  Modifiers
@@ -54,11 +64,41 @@ where T : class
     /// <summary>
     /// Marks this rule as requiring unique values across all seeded entities. If the configured value source produces duplicates, an exception will be thrown at runtime.
     /// </summary>
-    /// <returns></returns>
     public SeedRule<T, TProperty> Unique()
     {
         _seenValues ??= new HashSet<TProperty>();
         _unique = true;
+        return this;
+    }
+
+    /// <summary>
+    /// Applies this rule only when <paramref name="condition"/> returns <see langword="true"/> for the entity
+    /// being seeded. Because rules run after their dependencies, the entity already has any depended-on
+    /// properties set when the condition is evaluated.
+    /// </summary>
+    /// <param name="condition">A predicate that receives the partially-built entity instance.</param>
+    public SeedRule<T, TProperty> When(Func<T, bool> condition)
+    {
+        _condition = condition;
+        return this;
+    }
+
+    /// <summary>
+    /// Declares that this rule must run after the rule that targets <paramref name="dependency"/>.
+    /// <see cref="SeedBuilder{T}.Build"/> uses Kahn's topological sort to enforce this ordering.
+    /// Can be chained to declare multiple dependencies.
+    /// </summary>
+    /// <typeparam name="TDep">The type of the dependency property.</typeparam>
+    /// <param name="dependency">A direct member expression identifying the property to run first (e.g. <c>x => x.IsAdmin</c>).</param>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="dependency"/> is not a direct member access.</exception>
+    public SeedRule<T, TProperty> DependsOn<TDep>(Expression<Func<T, TDep>> dependency)
+    {
+        if (dependency.Body is not MemberExpression { Expression: ParameterExpression } memberExpr)
+            throw new ArgumentException(
+                $"Dependency selector must target a direct property of {typeof(T).Name}. Nested property access is not supported.",
+                nameof(dependency));
+
+        _dependencies.Add(memberExpr.Member.Name);
         return this;
     }
 
@@ -130,6 +170,9 @@ where T : class
     /// </exception>
     public void Apply(T instance, int index = 0)
     {
+        if (_condition != null && !_condition(instance))
+            return;
+
         var val = GenerateValue(instance, index);
         _setter(instance, val);
     }

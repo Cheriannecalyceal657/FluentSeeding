@@ -7,6 +7,16 @@ namespace FluentSeeding;
 public interface ISeedRule<in T>
 {
     /// <summary>
+    /// The name of the property this rule targets. Used for dependency resolution.
+    /// </summary>
+    string PropertyName { get; }
+
+    /// <summary>
+    /// The names of properties this rule must run after. Used by the topological sorter.
+    /// </summary>
+    IReadOnlyCollection<string> Dependencies { get; }
+
+    /// <summary>
     /// Applies the rule to the given entity instance, setting the target property.
     /// </summary>
     /// <param name="instance">The entity instance to modify.</param>
