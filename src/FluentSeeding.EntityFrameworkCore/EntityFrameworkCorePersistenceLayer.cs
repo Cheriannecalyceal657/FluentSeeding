@@ -14,12 +14,21 @@ internal sealed class EntityFrameworkCorePersistenceLayer : IPersistenceLayer
     public void Persist<T>(IEnumerable<T> entities) where T : class
     {
         _dbContext.Set<T>().AddRange(entities);
-        _dbContext.SaveChanges();
     }
 
     public Task PersistAsync<T>(IEnumerable<T> entities, CancellationToken cancellationToken = default) where T : class
     {
         _dbContext.Set<T>().AddRange(entities);
+        return Task.CompletedTask;
+    }
+
+    public void Flush()
+    {
+        _dbContext.SaveChanges();
+    }
+
+    public Task FlushAsync(CancellationToken cancellationToken = default)
+    {
         return _dbContext.SaveChangesAsync(cancellationToken);
     }
 }

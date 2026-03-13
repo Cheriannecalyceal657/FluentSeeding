@@ -22,7 +22,8 @@ public sealed class SeederRunner
     }
 
     /// <summary>
-    /// Runs all seeders synchronously, persisting each in registration order.
+    /// Runs all seeders synchronously, persisting each in registration order,
+    /// then flushes all staged entities to the store in a single commit.
     /// </summary>
     public void Run()
     {
@@ -30,17 +31,20 @@ public sealed class SeederRunner
         {
             seeder.PersistTo(_persistenceLayer);
         }
+        _persistenceLayer.Flush();
     }
 
     /// <summary>
-    /// Runs all seeders asynchronously, persisting each in registration order.
+    /// Runs all seeders asynchronously, persisting each in registration order,
+    /// then flushes all staged entities to the store in a single commit.
     /// </summary>
-    /// <param name="cancellationToken">Propagated to each seeder's async persist call.</param>
+    /// <param name="cancellationToken">Propagated to each seeder's async persist call and the final flush.</param>
     public async Task RunAsync(CancellationToken cancellationToken = default)
     {
         foreach (var seeder in _seeders)
         {
             await seeder.PersistToAsync(_persistenceLayer, cancellationToken);
         }
+        await _persistenceLayer.FlushAsync(cancellationToken);
     }
 }
