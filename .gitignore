@@ -5,7 +5,10 @@
 
 # dotenv files
 .env
+
+# Sqlite files
 *.db
+*.db-*
 
 # User-specific files
 *.rsuser
