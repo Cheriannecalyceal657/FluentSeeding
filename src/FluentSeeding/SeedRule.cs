@@ -16,7 +16,7 @@ where T : class
 {
     private readonly Expression<Func<T, TProperty>> _selector;
     private readonly Action<T, TProperty> _setter;
-    private readonly SeedBuilder<T> _parent;
+    public readonly SeedBuilder<T> Parent;
     private readonly HashSet<string> _dependencies = new();
     private Func<T, bool>? _condition;
 
@@ -54,7 +54,7 @@ where T : class
     internal SeedRule(Expression<Func<T, TProperty>> selector, SeedBuilder<T> parent)
     {
         _selector = selector;
-        _parent = parent;
+        Parent = parent;
         _setter = selector.BuildSetter();
         PropertyName = ((MemberExpression)selector.Body).Member.Name;
     }
@@ -111,7 +111,7 @@ where T : class
     public SeedBuilder<T> UseValue(TProperty value)
     {
         ValueFactory = () => value;
-        return _parent;
+        return Parent;
     }
 
     /// <summary>
@@ -122,7 +122,7 @@ where T : class
     public SeedBuilder<T> UseFactory(Func<TProperty> value)
     {
         ValueFactory = value;
-        return _parent;
+        return Parent;
     }
 
     /// <summary>
@@ -133,7 +133,7 @@ where T : class
     public SeedBuilder<T> UseFactory(Func<int, TProperty> value)
     {
         IndexedValueFactory = value;
-        return _parent;
+        return Parent;
     }
 
     /// <summary>
@@ -146,7 +146,7 @@ where T : class
         if (values == null || values.Length == 0)
             throw new ArgumentException("Values collection cannot be null or empty.", nameof(values));
         ValueFactory = () => values[Random.Shared.Next(values.Length)];
-        return _parent;
+        return Parent;
     }
 
     /// <summary>
@@ -160,7 +160,7 @@ where T : class
         if (values == null || !vals.Any())
             throw new ArgumentException("Values collection cannot be null or empty.", nameof(values));
         ValueFactory = () => vals.ElementAt(Random.Shared.Next(vals.Count()));
-        return _parent;
+        return Parent;
     }
     #endregion
     /// <inheritdoc />
