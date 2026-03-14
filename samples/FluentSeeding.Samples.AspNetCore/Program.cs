@@ -1,4 +1,3 @@
-using FluentSeeding;
 using FluentSeeding.AspNetCore;
 using FluentSeeding.EntityFrameworkCore;
 using FluentSeeding.Samples.AspNetCore.Data;
@@ -33,11 +32,7 @@ using (var scope = app.Services.CreateScope())
     db.Database.EnsureCreated();
 }
 
-app.MapPost("/seed", async (SeederRunner runner, CancellationToken ct) =>
-{
-    await runner.RunAsync(ct);
-    return Results.Ok("Seeding completed.");
-});
+await app.RunSeedersAsync();
 
 app.MapGet("/categories", async (SampleDbContext db) =>
     await db.Categories.AsNoTracking().IgnoreAutoIncludes().ToListAsync());
