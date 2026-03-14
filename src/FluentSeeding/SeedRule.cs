@@ -29,24 +29,24 @@ where T : class
     /// <inheritdoc />
     public IReadOnlyCollection<string> Dependencies => _dependencies;
 
-    private Func<TProperty>? _valueFactory
+    public Func<TProperty>? ValueFactory
     {
         get;
         set
         {
             if (field == value) return;
-            _indexedValueFactory = null;
+            IndexedValueFactory = null;
             field = value;
         }
     }
 
-    private Func<int, TProperty>? _indexedValueFactory
+    public Func<int, TProperty>? IndexedValueFactory
     {
         get;
         set
         {
             if (field == value) return;
-            _valueFactory = null;
+            ValueFactory = null;
             field = value;
         }
     }
@@ -110,7 +110,7 @@ where T : class
     /// </summary>
     public SeedBuilder<T> UseValue(TProperty value)
     {
-        _valueFactory = () => value;
+        ValueFactory = () => value;
         return _parent;
     }
 
@@ -121,7 +121,7 @@ where T : class
     /// <remarks>Setting this clears any previously configured indexed factory.</remarks>
     public SeedBuilder<T> UseFactory(Func<TProperty> value)
     {
-        _valueFactory = value;
+        ValueFactory = value;
         return _parent;
     }
 
@@ -132,7 +132,7 @@ where T : class
     /// <remarks>Setting this clears any previously configured non-indexed factory.</remarks>
     public SeedBuilder<T> UseFactory(Func<int, TProperty> value)
     {
-        _indexedValueFactory = value;
+        IndexedValueFactory = value;
         return _parent;
     }
 
@@ -145,7 +145,7 @@ where T : class
     {
         if (values == null || values.Length == 0)
             throw new ArgumentException("Values collection cannot be null or empty.", nameof(values));
-        _valueFactory = () => values[Random.Shared.Next(values.Length)];
+        ValueFactory = () => values[Random.Shared.Next(values.Length)];
         return _parent;
     }
 
@@ -159,7 +159,7 @@ where T : class
         var vals = values as TProperty[] ?? values.ToArray();
         if (values == null || !vals.Any())
             throw new ArgumentException("Values collection cannot be null or empty.", nameof(values));
-        _valueFactory = () => vals.ElementAt(Random.Shared.Next(vals.Count()));
+        ValueFactory = () => vals.ElementAt(Random.Shared.Next(vals.Count()));
         return _parent;
     }
     #endregion
@@ -180,13 +180,13 @@ where T : class
     private TProperty GenerateValue(T instance, int index)
     {
         TProperty value;
-        if (_valueFactory != null)
+        if (ValueFactory != null)
         {
-            value = _valueFactory();
+            value = ValueFactory();
         }
-        else if (_indexedValueFactory != null)
+        else if (IndexedValueFactory != null)
         {
-            value = _indexedValueFactory(index);
+            value = IndexedValueFactory(index);
         }
         else
         {
@@ -203,13 +203,13 @@ where T : class
                 if (attempts++ > 100)
                     throw new InvalidOperationException($"Unable to generate a unique value for '{_selector}' after 100 attempts. Consider expanding the value pool, changing your value factory or removing the uniqueness requirement.");
                 
-                if (_valueFactory != null)
+                if (ValueFactory != null)
                 {
-                    value = _valueFactory();
+                    value = ValueFactory();
                 }
-                else if (_indexedValueFactory != null)
+                else if (IndexedValueFactory != null)
                 {
-                    value = _indexedValueFactory(index);
+                    value = IndexedValueFactory(index);
                 }
             } while (true);
         }
