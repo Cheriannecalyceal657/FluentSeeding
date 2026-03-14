@@ -69,7 +69,7 @@ public sealed class IdempotentGuidTests
         // Arrange / Act
         var guid = Idempotent.Guid<User>(0);
 
-        // Assert — in "xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx", M is at index 14
+        // Assert 
         guid.ToString()[14].Should().Be('5');
     }
 
@@ -79,7 +79,7 @@ public sealed class IdempotentGuidTests
         // Arrange / Act
         var guid = Idempotent.Guid<User>(0);
 
-        // Assert — in "xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx", N is at index 19;
+        // Assert 
         // RFC 4122 variant has upper 2 bits = 10, yielding hex digit 8, 9, a, or b
         var variantChar = guid.ToString()[19];
         new[] { '8', '9', 'a', 'b' }.Should().Contain(variantChar);

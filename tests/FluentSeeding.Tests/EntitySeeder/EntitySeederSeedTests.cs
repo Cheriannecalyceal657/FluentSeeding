@@ -104,7 +104,7 @@ public sealed class EntitySeederSeedTests
         // Arrange
         var seeder = new VariableCountSeeder();
 
-        // Act & Assert — repeat to increase confidence the random stays in range
+        // Act & Assert
         for (int i = 0; i < 30; i++)
         {
             var count = seeder.Seed().Count();
@@ -122,7 +122,7 @@ public sealed class EntitySeederSeedTests
         var fromSeed = seeder.Seed().ToList();
         var fromInternal = seeder.SeedInternal().ToList();
 
-        // Assert — both should produce entities of the same type, count, and values
+        // Assert 
         fromInternal.Should().HaveCount(fromSeed.Count);
         fromInternal.Should().AllBeOfType<Item>();
         fromInternal.Cast<Item>().Should().OnlyContain(i => i.Label == "Test" && i.Value == 42);

@@ -15,7 +15,7 @@ public sealed class SeedRuleUseFromTests : SeedRuleTest
         var rule = CreateRule(u => u.Name);
         rule.UseFrom("Only");
 
-        // Act & Assert — run several times to be confident it always picks the one value
+        // Act & Assert 
         for (int i = 0; i < 20; i++)
         {
             var user = new User();

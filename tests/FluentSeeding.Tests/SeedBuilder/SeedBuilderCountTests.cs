@@ -61,7 +61,7 @@ public sealed class SeedBuilderCountTests
         var builder = new SeedBuilder<Model>();
         builder.Count(3, 8);
 
-        // Act — repeat to increase confidence the random stays in range
+        // Act
         for (int i = 0; i < 50; i++)
         {
             var count = builder.Build().Count();

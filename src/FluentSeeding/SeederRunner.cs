@@ -6,7 +6,7 @@ namespace FluentSeeding;
 /// </summary>
 /// <remarks>
 /// Seeders are executed sequentially in registration order. This matters when seeders have
-/// dependencies — a dependent seeder should be registered after the seeder it depends on.
+/// dependencies. A dependent seeder should be registered after the seeder it depends on.
 /// </remarks>
 public sealed class SeederRunner
 {

@@ -98,7 +98,7 @@ public sealed class ServiceCollectionExtensionsTests
         // Arrange / Act
         var services = BuildServicesWithTypedContext(configure: null);
 
-        // Assert — no exception, layer resolves successfully
+        // Assert 
         using var provider = services.BuildServiceProvider();
         using var scope = provider.CreateScope();
         scope.ServiceProvider.GetRequiredService<IPersistenceLayer>()
@@ -184,11 +184,11 @@ public sealed class ServiceCollectionExtensionsTests
         var runner = scope.ServiceProvider.GetRequiredService<SeederRunner>();
         var dbContext = scope.ServiceProvider.GetRequiredService<TestDbContext>();
 
-        // Act — run twice; seeder caches Data so the same 5 products (same GUIDs) are re-presented
+        // Act 
         runner.Run();
         runner.Run();
 
-        // Assert — Skip behavior means second run inserts nothing; count stays at 5
+        // Assert 
         dbContext.Products.Should().HaveCount(5);
     }
 }

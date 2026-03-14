@@ -88,7 +88,7 @@ public sealed class SeedBuilderTopologicalSortTests
     [Test]
     public void Build_WithDependencyOnPropertyWithNoRule_ShouldStillApplyDependentRule()
     {
-        // Arrange - Derived depends on SecondDerived, which has no rule — ordering constraint is a no-op
+        // Arrange - Derived depends on SecondDerived, which has no rule 
         var builder = new SeedBuilder<Model>();
         builder.RuleFor(m => m.Derived)
             .DependsOn(m => m.SecondDerived)
