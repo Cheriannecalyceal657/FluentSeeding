@@ -22,11 +22,10 @@ public class ProductSeeder : EntitySeeder<Product>
 
     protected override void Configure(SeedBuilder<Product> builder)
     {
-        builder
-            .Count(20)
-            .RuleFor(x => x.Id).UseFactory(Guid.NewGuid)
-            .RuleFor(x => x.Name).UseFactory(i => Names[i])
-            .RuleFor(x => x.Price).UseFactory(() => Math.Round((decimal)(Random.Shared.NextDouble() * 195 + 5), 2))
-            .RuleFor(x => x.CategoryId).UseFrom(_categorySeeder.Data.Select(c => c.Id));
+        builder.Count(20);
+        builder.RuleFor(x => x.Id).UseIdempotentGuid();
+        builder.RuleFor(x => x.Name).UseFactory(i => Names[i]);
+        builder.RuleFor(x => x.Price).UseFactory(() => Math.Round((decimal)(Random.Shared.NextDouble() * 195 + 5), 2));
+        builder.RuleFor(x => x.CategoryId).UseFrom(_categorySeeder.Data.Select(c => c.Id));;
     }
 }

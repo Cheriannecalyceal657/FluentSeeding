@@ -11,8 +11,8 @@ public class CategorySeeder : EntitySeeder<Category>
     protected override void Configure(SeedBuilder<Category> builder)
     {
         builder
-            .Count(5)
-            .RuleFor(x => x.Id).UseFactory(Guid.NewGuid)
-            .RuleFor(x => x.Name).UseFactory(i => Names[i]);
+            .Count(5);
+        builder.RuleFor(x => x.Id).UseIdempotentGuid();
+        builder.RuleFor(x => x.Name).UseFactory(i => Names[i]);
     }
 }

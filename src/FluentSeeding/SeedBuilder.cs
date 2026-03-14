@@ -12,6 +12,7 @@ public sealed class SeedBuilder<T> where T : class
     private Func<T>? _factory;
     private int _countMin = 1;
     private int _countMax = 1;
+    private int _nextIndex = 0;
 
     /// <summary>
     /// Seeds exactly <paramref name="count"/> entities.
@@ -169,8 +170,9 @@ public sealed class SeedBuilder<T> where T : class
             var entity = _factory != null ? _factory() : Activator.CreateInstance<T>()!;
             foreach (var rule in sortedRules)
             {
-                rule.Apply(entity, i);
+                rule.Apply(entity, _nextIndex);
             }
+            _nextIndex++;
             entities.Add(entity);
         }
 
