@@ -1,5 +1,5 @@
 using FluentAssertions;
-using FluentSeeding.DependencyInjection;
+using FluentSeeding.AspNetCore;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 
@@ -7,7 +7,7 @@ namespace FluentSeeding.DependencyInjection.Tests.SeederBuilder;
 
 [TestFixture(TestName = "SeederBuilder.AddSeeder")]
 [Category("Unit")]
-[Category(nameof(global::FluentSeeding.DependencyInjection.SeederBuilder))]
+[Category(nameof(global::FluentSeeding.AspNetCore.SeederBuilder))]
 public sealed class SeederBuilderAddSeederTests
 {
     private class User
@@ -30,7 +30,7 @@ public sealed class SeederBuilderAddSeederTests
         protected override void Configure(SeedBuilder<Product> builder) => builder.Count(1);
     }
 
-    private static ServiceProvider BuildProvider(Action<global::FluentSeeding.DependencyInjection.SeederBuilder> configure)
+    private static ServiceProvider BuildProvider(Action<global::FluentSeeding.AspNetCore.SeederBuilder> configure)
     {
         var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
         services.AddScoped(_ => Substitute.For<IPersistenceLayer>());
@@ -112,8 +112,8 @@ public sealed class SeederBuilderAddSeederTests
     {
         // Arrange
         var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
-        global::FluentSeeding.DependencyInjection.SeederBuilder? capturedBuilder = null;
-        global::FluentSeeding.DependencyInjection.SeederBuilder? returnedBuilder = null;
+        global::FluentSeeding.AspNetCore.SeederBuilder? capturedBuilder = null;
+        global::FluentSeeding.AspNetCore.SeederBuilder? returnedBuilder = null;
 
         // Act
         services.AddFluentSeeding(b =>

@@ -1,5 +1,5 @@
 using FluentSeeding;
-using FluentSeeding.DependencyInjection;
+using FluentSeeding.AspNetCore;
 using FluentSeeding.EntityFrameworkCore;
 using FluentSeeding.Samples.AspNetCore.Data;
 using FluentSeeding.Samples.AspNetCore.Entities;
@@ -16,9 +16,8 @@ builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =
 builder.Services.AddDbContext<SampleDbContext>(options =>
     options.UseSqlite("Data Source=sample.db"));
 
-builder.Services.AddFluentSeeding(seeders => { seeders.AddSeedersFromAssemblyContaining<OrderSeeder>(); });
-
-builder.Services.AddFluentSeedingEntityFrameworkCore<SampleDbContext>(options =>
+builder.Services.AddFluentSeeding(seeders => { seeders.AddSeedersFromAssemblyContaining<OrderSeeder>(); })
+    .AddFluentSeedingEntityFrameworkCore<SampleDbContext>(options =>
     options.ConflictBehavior = ConflictBehavior.Skip);
 
 var app = builder.Build();

@@ -1,7 +1,7 @@
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FluentSeeding.DependencyInjection;
+namespace FluentSeeding.AspNetCore;
 
 /// <summary>
 /// Configures which <see cref="EntitySeederBase"/> implementations are registered in the DI container.

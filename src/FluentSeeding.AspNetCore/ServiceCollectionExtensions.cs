@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FluentSeeding.DependencyInjection;
+namespace FluentSeeding.AspNetCore;
 
 /// <summary>
 /// Extension methods for registering FluentSeeding services in an <see cref="IServiceCollection"/>.

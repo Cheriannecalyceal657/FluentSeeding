@@ -1,5 +1,5 @@
 using FluentAssertions;
-using FluentSeeding.DependencyInjection;
+using FluentSeeding.AspNetCore;
 using FluentSeeding.Tests.Common;
 using FluentSeeding.Tests.Common.Seeders;
 using Microsoft.Extensions.DependencyInjection;

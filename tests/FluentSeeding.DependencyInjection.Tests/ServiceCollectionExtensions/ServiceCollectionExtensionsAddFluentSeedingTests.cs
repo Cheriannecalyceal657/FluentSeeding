@@ -1,5 +1,5 @@
 using FluentAssertions;
-using FluentSeeding.DependencyInjection;
+using FluentSeeding.AspNetCore;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 
@@ -7,7 +7,7 @@ namespace FluentSeeding.DependencyInjection.Tests.ServiceCollectionExtensions;
 
 [TestFixture(TestName = "ServiceCollectionExtensions.AddFluentSeeding")]
 [Category("Unit")]
-[Category(nameof(global::FluentSeeding.DependencyInjection.ServiceCollectionExtensions))]
+[Category(nameof(global::FluentSeeding.AspNetCore.ServiceCollectionExtensions))]
 public sealed class ServiceCollectionExtensionsAddFluentSeedingTests
 {
     private class User
@@ -20,7 +20,7 @@ public sealed class ServiceCollectionExtensionsAddFluentSeedingTests
         protected override void Configure(SeedBuilder<User> builder) => builder.Count(1);
     }
 
-    private static IServiceCollection BuildServices(Action<global::FluentSeeding.DependencyInjection.SeederBuilder>? configure = null)
+    private static IServiceCollection BuildServices(Action<global::FluentSeeding.AspNetCore.SeederBuilder>? configure = null)
     {
         var services = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
         services.AddScoped(_ => Substitute.For<IPersistenceLayer>());
