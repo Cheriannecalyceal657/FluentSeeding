@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <PackageId>FluentSeeding.Faker</PackageId>
+        <Description>Locale-aware fake data generation for FluentSeeding. Provides realistic names, emails, addresses, and more across multiple locales.</Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\FluentSeeding\FluentSeeding.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="Locales\Data\*.json" />
+    </ItemGroup>
+
+</Project>

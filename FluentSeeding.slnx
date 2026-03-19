@@ -4,12 +4,14 @@
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/FluentSeeding.EntityFrameworkCore/FluentSeeding.EntityFrameworkCore.csproj" />
+    <Project Path="src/FluentSeeding.Faker/FluentSeeding.Faker.csproj" />
     <Project Path="src/FluentSeeding/FluentSeeding.csproj" />
     <Project Path="src\FluentSeeding.AspNetCore\FluentSeeding.AspNetCore.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/FluentSeeding.DependencyInjection.Tests/FluentSeeding.DependencyInjection.Tests.csproj" />
     <Project Path="tests/FluentSeeding.EntityFrameworkCore.Tests/FluentSeeding.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/FluentSeeding.Faker.Tests/FluentSeeding.Faker.Tests.csproj" />
     <Project Path="tests/FluentSeeding.Tests.Common/FluentSeeding.Tests.Common.csproj" />
     <Project Path="tests/FluentSeeding.Tests/FluentSeeding.Tests.csproj" />
   </Folder>
