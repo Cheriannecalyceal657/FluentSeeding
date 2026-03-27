@@ -9,4 +9,7 @@ internal sealed record LocaleData
 
     [JsonPropertyName("person")]
     public PersonLocaleData Person { get; init; } = null!;
+
+    [JsonPropertyName("address")]
+    public AddressLocaleData Address { get; init; } = null!;
 }

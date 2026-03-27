@@ -44,5 +44,81 @@
       "Borges", "Machado", "Pires", "Marques", "Azevedo",
       "Guimarães", "Melo", "Batista", "Xavier", "Tavares"
     ]
+  },
+  "address": {
+    "street_suffix": [
+      "Rua", "Avenida", "Alameda", "Travessa", "Praça",
+      "Estrada", "Rodovia", "Largo", "Beco", "Viela",
+      "Viaduto", "Via"
+    ],
+    "street_name": [
+      "das Flores", "dos Girassóis", "Brasil", "15 de Novembro",
+      "7 de Setembro", "Dom Pedro II", "Presidente Vargas",
+      "das Palmeiras", "dos Pinheiros", "das Acácias",
+      "das Margaridas", "das Rosas", "das Orquídeas",
+      "das Violetas", "do Comércio", "da Liberdade",
+      "da Paz", "da Esperança", "do Progresso",
+      "da Independência", "dos Trabalhadores", "das Artes",
+      "da Cultura", "João Pessoa", "Santos Dumont",
+      "Tiradentes", "Marechal Deodoro", "Visconde de Mauá",
+      "Voluntários da Pátria", "Sete de Abril",
+      "da República", "das Nações", "do Bosque",
+      "das Mangueiras", "dos Coqueiros", "das Amendoeiras",
+      "das Castanheiras", "dos Flamboyants", "das Buganvílias",
+      "das Ipês-Amarelas", "das Azaléias", "do Rio Claro",
+      "do Rio Verde", "do Ribeirão", "da Serra", "da Montanha",
+      "do Vale", "da Colina", "do Planalto", "da Várzea"
+    ],
+    "city": [
+      "São Paulo", "Rio de Janeiro", "Belo Horizonte", "Salvador",
+      "Fortaleza", "Manaus", "Curitiba", "Recife", "Porto Alegre",
+      "Belém", "Goiânia", "Guarulhos", "Campinas", "São Luís",
+      "São Gonçalo", "Maceió", "Duque de Caxias", "Natal",
+      "Campo Grande", "Teresina", "São Bernardo do Campo",
+      "Nova Iguaçu", "João Pessoa", "Santo André", "Osasco",
+      "Jaboatão dos Guararapes", "Contagem", "Ribeirão Preto",
+      "Uberlândia", "Sorocaba", "Aracaju", "Cuiabá", "Macapá",
+      "Porto Velho", "Florianópolis", "Vitória", "Maceió",
+      "São José do Rio Preto", "Mogi das Cruzes", "Joinville"
+    ],
+    "state": [
+      "Acre", "Alagoas", "Amapá", "Amazonas", "Bahia",
+      "Ceará", "Distrito Federal", "Espírito Santo", "Goiás",
+      "Maranhão", "Mato Grosso", "Mato Grosso do Sul",
+      "Minas Gerais", "Pará", "Paraíba", "Paraná",
+      "Pernambuco", "Piauí", "Rio de Janeiro",
+      "Rio Grande do Norte", "Rio Grande do Sul", "Rondônia",
+      "Roraima", "Santa Catarina", "São Paulo", "Sergipe", "Tocantins"
+    ],
+    "state_abbreviation": [
+      "AC", "AL", "AP", "AM", "BA",
+      "CE", "DF", "ES", "GO", "MA",
+      "MT", "MS", "MG", "PA", "PB",
+      "PR", "PE", "PI", "RJ", "RN",
+      "RS", "RO", "RR", "SC", "SP",
+      "SE", "TO"
+    ],
+    "building_number_format": [ "#", "##", "###", "####" ],
+    "secondary_address_format": [ "Apto. ###", "Sala ###", "Bloco #", "Conjunto ###", "Apto. ##" ],
+    "zip_code_format": [ "#####-###" ],
+    "street_address_format": [ "{suffix} {name}, {number}" ],
+    "countries": [
+      "Afeganistão", "Albânia", "Alemanha", "Argélia", "Argentina",
+      "Austrália", "Áustria", "Bélgica", "Bolívia", "Brasil",
+      "Bulgária", "Camboja", "Canadá", "Chile", "China",
+      "Colômbia", "Coreia do Sul", "Croácia", "Cuba", "Dinamarca",
+      "Equador", "Egito", "Eslováquia", "Eslovênia", "Espanha",
+      "Estados Unidos", "Etiópia", "Filipinas", "Finlândia", "França",
+      "Gana", "Grécia", "Guatemala", "Hungria", "Índia",
+      "Indonésia", "Irã", "Iraque", "Irlanda", "Israel",
+      "Itália", "Japão", "Jordânia", "Cazaquistão", "Quênia",
+      "Malásia", "Marrocos", "México", "Nepal", "Noruega",
+      "Nova Zelândia", "Países Baixos", "Paquistão", "Panamá",
+      "Paraguai", "Peru", "Polônia", "Portugal", "Reino Unido",
+      "República Tcheca", "Romênia", "Rússia", "Sérvia", "Singapura",
+      "África do Sul", "Sri Lanka", "Suécia", "Suíça", "Tailândia",
+      "Tunísia", "Turquia", "Ucrânia", "Emirados Árabes Unidos",
+      "Uruguai", "Venezuela", "Vietnã", "Zimbábue"
+    ]
   }
 }

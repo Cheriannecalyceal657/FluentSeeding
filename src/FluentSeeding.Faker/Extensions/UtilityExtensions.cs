@@ -34,4 +34,20 @@ internal static class UtilityExtensions
             yield return list[index];
         }
     }
+
+    /// <summary>
+    /// Replaces each <c>#</c> character in <paramref name="format"/> with a random decimal digit (0–9).
+    /// All other characters are passed through unchanged.
+    /// </summary>
+    public static string FillFormat(this string format)
+    {
+        Span<char> buf = format.Length <= 64
+            ? stackalloc char[format.Length]
+            : new char[format.Length];
+
+        for (var i = 0; i < format.Length; i++)
+            buf[i] = format[i] == '#' ? (char)('0' + Random.Shared.Next(10)) : format[i];
+
+        return new string(buf);
+    }
 }
