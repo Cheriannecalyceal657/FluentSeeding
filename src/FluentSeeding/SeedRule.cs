@@ -114,25 +114,28 @@ where T : class
     }
 
     /// <summary>
-    /// Invokes <paramref name="value"/> once per entity, passing the partially-built entity instance.
-    /// Use this when the property value depends on other already-seeded properties
-    /// (e.g. <c>e => e.FirstName + "." + e.LastName + "@example.com"</c>).
-    /// Pair with <see cref="DependsOn{TDep}"/> to guarantee the depended-on properties are set first.
+    /// Invokes <paramref name="expression"/> once per entity, passing the partially-built entity instance.
+    /// Direct property accesses on the entity (e.g. <c>e.FirstName</c>) are automatically registered as
+    /// dependencies, so those rules always run first. Use <see cref="DependsOn{TDep}"/> to declare any
+    /// additional dependencies that cannot be inferred from the expression.
     /// </summary>
-    public SeedBuilder<T> UseEntityFactory(Func<T, TProperty> value)
+    public SeedBuilder<T> UseEntityFactory(Expression<Func<T, TProperty>> expression)
     {
-        _factory = (e, _) => value(e);
+        RegisterEntityDependencies(expression.Body, expression.Parameters[0]);
+        var compiled = expression.Compile();
+        _factory = (e, _) => compiled(e);
         return Parent;
     }
 
     /// <summary>
-    /// Invokes <paramref name="value"/> once per entity, passing the partially-built entity instance
+    /// Invokes <paramref name="expression"/> once per entity, passing the partially-built entity instance
     /// and the entity's zero-based index in the seed batch.
-    /// Pair with <see cref="DependsOn{TDep}"/> to guarantee the depended-on properties are set first.
+    /// Direct property accesses on the entity are automatically registered as dependencies.
     /// </summary>
-    public SeedBuilder<T> UseEntityFactory(Func<T, int, TProperty> value)
+    public SeedBuilder<T> UseEntityFactory(Expression<Func<T, int, TProperty>> expression)
     {
-        _factory = value;
+        RegisterEntityDependencies(expression.Body, expression.Parameters[0]);
+        _factory = expression.Compile();
         return Parent;
     }
 
@@ -198,5 +201,28 @@ where T : class
         }
 
         return value;
+    }
+
+    private void RegisterEntityDependencies(Expression body, ParameterExpression entityParam)
+    {
+        var visitor = new DirectMemberVisitor(entityParam);
+        visitor.Visit(body);
+        foreach (var name in visitor.Members)
+            _dependencies.Add(name);
+    }
+
+    private sealed class DirectMemberVisitor(ParameterExpression entityParam) : ExpressionVisitor
+    {
+        public readonly HashSet<string> Members = new();
+
+        protected override Expression VisitMember(MemberExpression node)
+        {
+            if (node.Expression == entityParam)
+            {
+                Members.Add(node.Member.Name);
+                return node; 
+            }
+            return base.VisitMember(node);
+        }
     }
 }
