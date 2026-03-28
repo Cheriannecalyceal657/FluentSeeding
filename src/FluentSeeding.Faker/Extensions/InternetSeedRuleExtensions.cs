@@ -137,6 +137,49 @@ public static class InternetSeedRuleExtensions
             return new string(chars[..pos]);
         });
     }
+    
+    /// <summary>
+    /// Generates a random password with the specified length and character set options.
+    /// </summary>
+    public static SeedBuilder<T> UsePassword<T>(
+        this SeedRule<T, string> rule,
+        int length = 16,
+        bool useUppercase = true,
+        bool useDigits = true,
+        bool useSymbols = true)
+        where T : class
+    {
+        return rule.UseFactory(() =>
+        {
+            const string lower   = "abcdefghijklmnopqrstuvwxyz";
+            const string upper   = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const string digits  = "0123456789";
+            const string symbols = "!@#$%^&*()-_=+[]{}|;:,.<>?";
+
+            var pool = new StringBuilder(lower);
+            if (useUppercase) pool.Append(upper);
+            if (useDigits)    pool.Append(digits);
+            if (useSymbols)   pool.Append(symbols);
+
+            var poolStr = pool.ToString();
+
+            var required = new List<char> { lower[Random.Shared.Next(lower.Length)] };
+            if (useUppercase) required.Add(upper  [Random.Shared.Next(upper.Length)]);
+            if (useDigits)    required.Add(digits [Random.Shared.Next(digits.Length)]);
+            if (useSymbols)   required.Add(symbols[Random.Shared.Next(symbols.Length)]);
+
+            Span<char> chars = stackalloc char[length];
+            for (var i = 0; i < length; i++)
+                chars[i] = poolStr[Random.Shared.Next(poolStr.Length)];
+
+            var positions = Random.Shared.GetItems(
+                Enumerable.Range(0, length).ToArray(), required.Count);
+            for (var i = 0; i < required.Count; i++)
+                chars[positions[i]] = required[i];
+
+            return new string(chars);
+        });
+    }
 
     private static string BuildRandomPrefix(LocaleData data)
     {
