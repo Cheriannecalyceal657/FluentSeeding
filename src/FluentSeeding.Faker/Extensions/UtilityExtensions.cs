@@ -4,6 +4,19 @@ namespace FluentSeeding.Faker.Extensions;
 
 internal static class UtilityExtensions
 {
+    public static string PickFromAny(params ReadOnlySpan<string[]> pools)
+    {
+        int total = 0;
+        foreach (var pool in pools) total += pool.Length;
+        int idx = Random.Shared.Next(total);                                                                                                                                                  
+        foreach (var pool in pools)
+        {                                                                                                                                                                                     
+            if (idx < pool.Length) return pool[idx];          
+            idx -= pool.Length;
+        }
+
+        return pools[0][0]; 
+    }
     public static string[] GetForGender(this GenderedArrays arrays, Gender gender)
     {
         return gender switch

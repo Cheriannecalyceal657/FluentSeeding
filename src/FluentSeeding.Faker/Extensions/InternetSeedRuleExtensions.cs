@@ -181,6 +181,18 @@ public static class InternetSeedRuleExtensions
         });
     }
 
+    public static SeedBuilder<T> UseUsername<T>(this SeedRule<T, string> rule) where T : class
+    {
+        return rule.UseFactory(() =>
+        {
+            var w = FluentFaker.Locale(rule.Parent.GetLocale()).Words;
+            
+            var part1 = w.Adjectives.Pick();                                                                                                               
+            var part2 = UtilityExtensions.PickFromAny(w.Nouns, w.Animals, w.Colors);
+            return $"{part1}{part2}".ToLowerInvariant();               
+        });
+    }
+
     private static string BuildRandomPrefix(LocaleData data)
     {
         var first = Sanitize(data.Person.FirstName.GetForGender(Gender.Any).Pick());
