@@ -34,4 +34,9 @@ public static class PersonSeedRuleExtensions
             return $"{firstName} {string.Join(" ", lastNames)}";
         });
     }
+
+    public static SeedBuilder<T> UseOccupation<T>(this SeedRule<T, string> rule) where T : class
+    {
+        return rule.UseFrom(FluentFaker.Locale(rule.Parent.GetLocale()).Person.Occupations);
+    }
 }
