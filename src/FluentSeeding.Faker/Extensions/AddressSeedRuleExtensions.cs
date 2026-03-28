@@ -102,7 +102,7 @@ public static class AddressSeedRuleExtensions
     /// </summary>
     public static SeedBuilder<T> UseCountry<T>(this SeedRule<T, string> rule) where T : class
     {
-        return rule.UseFrom(FluentFaker.Locale(rule.Parent.GetLocale()).Address.City);
+        return rule.UseFrom(FluentFaker.Locale(rule.Parent.GetLocale()).Address.Countries);
     }
 
     /// <summary>
